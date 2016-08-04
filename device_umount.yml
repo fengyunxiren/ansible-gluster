@@ -1,0 +1,14 @@
+---
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: umount device
+      shell: umount {{ umount_dir }}
+      when: ansible_hostname in mount_hosts
+
+  vars:
+    - umount_dir: /mnt/tmp
+    - mount_hosts:
+        - master
+        - cn03

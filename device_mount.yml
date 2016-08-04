@@ -1,0 +1,23 @@
+---
+- hosts: all
+  remote_user: root
+  tasks:
+    - name: mkdir
+      shell: mkdir -p {{ mount_dir }}
+      when: ansible_hostname in mount_hosts and mount_dir_make
+
+    - name: format device
+      shell: mkfs.ext4 {{ mount_device }}
+      when: ansible_hostname in mount_hosts
+
+    - name: mount volume
+      shell: mount {{ mount_device }} {{ mount_dir }}
+      when: ansible_hostname in mount_hosts
+
+  vars:
+    - mount_device: /dev/sda6
+    - mount_dir: /mnt/tmp
+    - mount_dir_make: True
+    - mount_hosts:
+        - master
+        - cn03
