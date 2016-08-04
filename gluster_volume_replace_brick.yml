@@ -1,0 +1,31 @@
+---
+- hosts: cnhosts
+  remote_user: root
+  tasks:
+    - name: gluster volume add new brick
+      shell: gluster volume add-brick {{ volume_name }} {{ add_hosts }}
+      when: ansible_hostname == control_host
+    - name: gluster remove old brick
+      shell: gluster volume remove-brick {{ volume_name }} {{ remove_hosts }} start
+      when: ansible_hostname == control_host
+    - name: gluster remove old brick commit
+      shell: yes|gluster volume remove-brick {{ volume_name }} {{ remove_hosts }} commit
+      when: ansible_hostname == control_host
+    - name: setfattr -x 1
+      shell: setfattr -x trusted.glusterfs.volume-id {{ volume_dir }}
+      when: ansible_hostname in set_hosts
+    - name: setfattr -x 2
+      shell: setfattr -x trusted.gfid {{ volume_dir }}
+      when: ansible_hostname in set_hosts
+    
+
+  vars:
+    - control_host: cn02
+    - volume_name: gv0
+    - volume_dir: /export/sda6/brick
+    - set_hosts:
+        - cn05
+    - add_hosts:
+        cn06:/export/sda6/brick
+    - remove_hosts:
+        cn05:/export/sda6/brick

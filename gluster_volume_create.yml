@@ -1,0 +1,20 @@
+---
+- hosts: cnhosts
+  remote_user: root
+  tasks:
+    - name: gluster volume create
+      shell: gluster volume create {{ volume_name }} {{ stripe_num }} {{ replica_num }} {{ cn_hosts }}
+      when: ansible_hostname == control_host
+    - name: start volume
+      shell: gluster volume start {{ volume_name }}
+      when: ansible_hostname == control_host
+  vars:
+    - control_host: cn02
+    - volume_name: gv0
+    - stripe_num: 
+    - replica_num: 
+    - cn_hosts: 
+        cn02:/export/sda6/brick
+        cn03:/export/sda6/brick
+        cn05:/export/sda6/brick
+        cn06:/export/sda6/brick

@@ -1,0 +1,17 @@
+---
+- hosts: all
+  remote_user: root
+  tasks:
+    - name: umount
+      shell: umount {{ umount_dir }}
+      when: ansible_hostname in umount_hosts
+    - name: rmdir
+      shell: rmdir {{ umount_dir }}
+      when: ansible_hostname in umount_hosts and delete_mount_dir
+
+  vars:
+    - umount_dir: /mnt/tmp
+    - delete_mount_dir: True
+    - umount_hosts:
+        - master
+        - cn03

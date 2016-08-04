@@ -1,0 +1,19 @@
+---
+- hosts: all
+  remote_user: root
+  tasks:
+    - name: mkdir
+      shell: mkdir -p {{ mount_dir }}
+      when: ansible_hostname in mount_hosts and mount_dir_make
+    - name: mount volume
+      shell: mount -t nfs -o vers=3 {{ control_host }}:/{{ volume_name }} {{ mount_dir }}
+      when: ansible_hostname in mount_hosts
+
+  vars:
+    - control_host: cn02
+    - volume_name: gv0
+    - mount_dir: /mnt/tmp
+    - mount_dir_make: True
+    - mount_hosts:
+        - master
+        - cn03

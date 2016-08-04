@@ -1,0 +1,15 @@
+---
+- hosts: cnhosts
+  remote_user: root
+  tasks:
+    - name: gluster peer probe
+      shell: gluster peer probe {{ item }}
+      with_items: add_hosts
+      when: ansible_hostname == control_host
+  vars:
+    - control_host: cn02
+    - add_hosts:
+        - cn03
+        - cn05
+        - cn06
+      

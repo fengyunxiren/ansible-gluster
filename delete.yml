@@ -1,0 +1,8 @@
+---
+- hosts: cnhosts
+  remote_user: root
+  tasks:
+    - name: delete gluster volume
+      shell: setfattr -x trusted.glusterfs.volume-id /export/sda6/brick/
+    - name: delete too
+      shell: setfattr -x trusted.gfid /export/sda6/brick/

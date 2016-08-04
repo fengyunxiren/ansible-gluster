@@ -1,0 +1,14 @@
+---
+- hosts: cnhosts
+  remote_user: root
+  tasks:
+    - name: restart glusterfs
+      service: name=glusterfs-server state=restarted
+      when: ansible_hostname in restart_hosts
+  
+  vars:
+    - restart_hosts:
+        - cn02
+        - cn03
+        - cn05
+        - cn06

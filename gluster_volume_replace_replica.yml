@@ -1,0 +1,36 @@
+---
+- hosts: cnhosts
+  remote_user: root
+  tasks:
+    - name: kill the remove_hosts
+      shell: gluster volume status|grep {{ remove_hosts }} |tail -l|awk '{print $NF}'|xargs kill -15
+      when: ansible_hostname in remove_hostname
+
+    - name: mount and unmount 
+      shell: mkdir /mnt/tmp;mount -t nfs -o vers=3 {{ control_host }}:/{{ volume_name }} /mnt/tmp;mkdir /mnt/tmp/test;rmdir /mnt/tmp/test;umount /mnt/tmp;rmdir /mnt/tmp
+      when: ansible_hostname == control_host
+
+    - name: volume replace brick
+      shell: gluster volume replace-brick {{ volume_name }} {{ remove_hosts }} {{ add_hosts }} commit force
+      when: ansible_hostname == control_host
+ 
+    - name: setfattr -x 1
+      shell: setfattr -x trusted.glusterfs.volume-id {{ volume_dir }}
+      when: ansible_hostname in remove_hostname
+    - name: setfattr -x 2
+      shell: setfattr -x trusted.gfid {{ volume_dir }}
+      when: ansible_hostname in remove_hostname
+
+
+    
+
+  vars:
+    - control_host: cn02
+    - volume_name: gv0
+    - volume_dir: /export/sda6/brick
+    - remove_hostname:
+        - cn06
+    - add_hosts:
+        cn05:/export/sda6/brick
+    - remove_hosts:
+        cn06:/export/sda6/brick

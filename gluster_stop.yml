@@ -1,0 +1,14 @@
+---
+- hosts: cnhosts
+  remote_user: root
+  tasks:
+    - name: stop glusterfs
+      service: name=glusterfs-server state=stopped
+      when: ansible_hostname in stop_hosts
+  
+  vars:
+    - stop_hosts:
+        - cn02
+        - cn03
+        - cn05
+        - cn06

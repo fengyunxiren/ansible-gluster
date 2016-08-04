@@ -1,0 +1,28 @@
+---
+- hosts: cnhosts
+  remote_user: root
+  tasks:
+    - name: gluter volume stop
+      shell: yes|gluster volume stop {{ volume_name }}
+      when: ansible_hostname == control_host
+    - name: gluster volume delete
+      shell: yes|gluster volume delete {{ volume_name }}
+      when: ansible_hostname == control_host
+
+    - name: setfattr 1
+      shell: setfattr -x trusted.glusterfs.volume-id {{ volume_dir }}
+      when: ansible_hostname in delete_hosts
+    - name: setfattr 2
+      shell: setfattr -x trusted.gfid {{ volume_dir }}
+      when: ansible_hostname in delete_hosts
+
+  vars:
+    - control_host: cn02
+    - volume_name: gv0
+    - volume_dir: /export/sda6/brick
+    - delete_hosts:
+        - cn02
+        - cn03
+        - cn05
+        - cn06
+
